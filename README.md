@@ -32,7 +32,7 @@ ESM-2 embed -> ridge -> split-conformal + applicability-domain eval.
   quartiles would leak), so unequal test-bin sizes reflect real domain
   shift.
 - **Conditional coverage**: Mondrian conformal, a separate residual
-  quantile per AD bin. Marginal coverage can hide a domain gradient;
+  quantile per AD bin. Marginal coverage can hide a domain gradient.
   per-bin calibration recovers flat coverage by widening intervals
   where extrapolation is real. Sparse bins (<30 calibration points)
   fall back to the global quantile.
@@ -74,7 +74,7 @@ recovers flat per-bin coverage** -- a separate residual quantile per bin:
 The mechanism is visible in the half-widths: intervals widen from 9.9 °C
 near the manifold to 14.5 °C at the edge, and the near bin's *coverage
 drops* (0.965 -> 0.898) because its interval correctly shrinks. That is
-the honest trade: same marginal coverage (~0.90), but now the guarantee
+the trade: same marginal coverage (~0.90), but now the guarantee
 holds per-bin instead of pooling easy and hard points.
 
 Composition features stay flat (~0.88 across all bins) under both
@@ -95,10 +95,10 @@ finding: the embedding-space AD is doing real diagnostic work.
 - 2,890 sequences >1024 aa are truncated (count logged). Their measured
   melting points may reflect C-terminal or multi-domain behavior the
   truncated embedding cannot see.
-- Marginal coverage at/near target does not imply per-domain coverage;
+- Marginal coverage at/near target does not imply per-domain coverage.
   Mondrian bins flatten the gradient but per-bin coverage is still a
   finite-sample estimate, not a strict conditional guarantee.
-- AD bins are coarse quartiles, not a learned domain boundary; a
+- AD bins are coarse quartiles, not a learned domain boundary. A
   distance threshold for abstention would need its own calibration.
 
 ## Run
@@ -120,7 +120,7 @@ the cache instead of reusing it.
 ridge coefficients + centroid + per-bin conformal quantiles), so it is
 diffable and loads without pickle. `spaces/protein-stability/` holds a
 Gradio app (sequence -> Tm + per-bin interval + domain flag) that
-consumes it; `spaces/protein-stability/push_space.sh` copies app +
+consumes it. `spaces/protein-stability/push_space.sh` copies app +
 artifact into a cloned HuggingFace Space repo.
 
 ## Data

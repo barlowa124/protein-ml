@@ -11,7 +11,7 @@ license: mit
 
 # Protein melting point with conformal interval
 
-Paste a protein sequence; get a predicted melting point (Tm) with a
+Paste a protein sequence and get a predicted melting point (Tm) with a
 **90% conformal interval** and an **applicability-domain flag**.
 
 - Model: ridge regression on mean-pooled ESM-2 (`esm2_t6_8M`, 320-d).
