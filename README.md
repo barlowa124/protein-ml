@@ -128,3 +128,7 @@ artifact into a cloned HuggingFace Space repo.
 FLIP `splits/meltome/splits.zip` (CC BY 4.0; meltome atlas per Jarzab et
 al., Nature Methods 2020). Downloaded zip and cached embeddings are
 gitignored. The compact summary and provenance are committed.
+
+## Related work
+
+- [comp-tox-pipeline](https://github.com/barlowa124/comp-tox-pipeline) applies the same conformal + applicability-domain discipline to Tox21 classification.
