@@ -1,5 +1,6 @@
 import tempfile
 import unittest
+from pathlib import Path
 
 from design_ops.backbone import parse_chain
 
@@ -35,7 +36,7 @@ class BackboneTests(unittest.TestCase):
 
     def test_real_fixture(self):
         info = parse_chain(
-            "../dockops/tests/fixtures/1L2Y.pdb", "A"
+            str(Path(__file__).parent / "fixtures" / "1L2Y.pdb"), "A"
         )
         self.assertEqual(info["native_seq"][:5], "NLYIQ")
         self.assertEqual(len(info["resseqs"]), 20)
