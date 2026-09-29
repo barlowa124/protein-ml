@@ -1,5 +1,8 @@
 # protein-ml
 
+[![ci](https://github.com/barlowa124/protein-ml/actions/workflows/ci.yml/badge.svg)](https://github.com/barlowa124/protein-ml/actions/workflows/ci.yml)
+
+
 Machine learning over measured protein fitness landscapes. Four related
 projects merged into one repository, each a self-contained package with its
 own tests, config, and commit history (imported via subtree merge).
