@@ -62,7 +62,7 @@ applicability domain. With bins fixed on calibration-distance quartiles
 
 Predictions degrade smoothly with distance from the training manifold
 (MAE +47%, coverage -11.4pp nearest to farthest). **Mondrian conformal
-recovers flat per-bin coverage** -- a separate residual quantile per bin:
+recovers flat per-bin coverage**: a separate residual quantile per bin:
 
 | AD bin | q (half-width °C) | Coverage | MAE °C |
 |---|---:|---:|---:|
