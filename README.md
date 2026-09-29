@@ -29,4 +29,5 @@ verification commands), which still apply.
 
 These four share datasets (FLIP / eLife GB1 mirrors), encoding utilities,
 provenance manifests, and evaluation conventions. Merging them makes the
-shared machinery visible instead of duplicated four ways.
+shared machinery visible in one place. A root-level parity test fails if
+the vendored `esm_cache.py` copies drift apart.
