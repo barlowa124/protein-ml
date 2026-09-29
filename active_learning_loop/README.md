@@ -181,5 +181,5 @@ regenerable intermediates.
 
 ## Related work
 
-- [protein-diffusion](https://github.com/barlowa124/protein-diffusion) is scored against the same GB1 measured oracle. The two results are directly comparable.
-- [dti-fusion](https://github.com/barlowa124/dti-fusion) and [protein-design-ops](https://github.com/barlowa124/protein-design-ops) use the same ESM-2 embeddings that lose to one-hot here. The negative result is committed in `results/`.
+- [protein-diffusion](https://github.com/barlowa124/protein-ml/tree/main/protein_diffusion) is scored against the same GB1 measured oracle. The two results are directly comparable.
+- [dti-fusion](https://github.com/barlowa124/mol-ml/tree/main/dti_fusion) and [protein-design-ops](https://github.com/barlowa124/protein-ml/tree/main/protein_design_ops) use the same ESM-2 embeddings that lose to one-hot here. The negative result is committed in `results/`.

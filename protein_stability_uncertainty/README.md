@@ -131,4 +131,4 @@ gitignored. The compact summary and provenance are committed.
 
 ## Related work
 
-- [comp-tox-pipeline](https://github.com/barlowa124/comp-tox-pipeline) applies the same conformal + applicability-domain discipline to Tox21 classification.
+- [comp-tox-pipeline](https://github.com/barlowa124/mol-ml/tree/main/comp_tox_pipeline) applies the same conformal + applicability-domain discipline to Tox21 classification.

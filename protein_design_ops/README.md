@@ -101,4 +101,4 @@ MIT licensed.
 ## Related work
 
 - The pinned-seed provenance discipline here is what caught the upstream ProteinMPNN `--seed 0` bug, filed as [ProteinMPNN issue #154](https://github.com/dauparas/ProteinMPNN/issues/154).
-- [dti-fusion](https://github.com/barlowa124/dti-fusion) and [active-learning-loop](https://github.com/barlowa124/active-learning-loop) use the same ESM-2 stack. The AL repo's committed negative result (one-hot beating ESM-2 on GB1) bounds what these embeddings can claim.
+- [dti-fusion](https://github.com/barlowa124/mol-ml/tree/main/dti_fusion) and [active-learning-loop](https://github.com/barlowa124/protein-ml/tree/main/active_learning_loop) use the same ESM-2 stack. The AL repo's committed negative result (one-hot beating ESM-2 on GB1) bounds what these embeddings can claim.

@@ -25,6 +25,6 @@ Paste a protein sequence and get a predicted melting point (Tm) with a
 **Scope**: intervals bound *model* error at the stated level, not assay
 reproducibility. Research/education demo.
 
-Source repo: https://github.com/barlowa124/protein-stability-uncertainty
+Source repo: https://github.com/barlowa124/protein-ml/tree/main/protein_stability_uncertainty
 (pipeline, evaluation, and the `results/deploy_esm2.json` artifact this
 app loads).
