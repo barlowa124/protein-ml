@@ -1,0 +1,61 @@
+{
+ "model": "data/processed/ddpm.pt",
+ "framework": "jax0.4.30+flax0.8.5 vs torch",
+ "parity": {
+  "eps_max_abs_dev": 3.0994415283203125e-06,
+  "x0_max_abs_dev": 2.1010637283325195e-06,
+  "n": 64,
+  "timesteps": 300
+ },
+ "guided_w8_oracle_jax": {
+  "n": 512.0,
+  "fitness_mean": 1.700150606126955,
+  "fitness_median": 1.47482056762,
+  "frac_ge_1": 0.6536458333333334,
+  "frac_ge_05": 0.8072916666666666,
+  "top_hits": 7.0,
+  "n_unique": 239.0,
+  "frac_unmeasured": 0.0,
+  "fitness_mean_std": 0.042972017253211314,
+  "fitness_median_std": 0.015802479169057915,
+  "frac_ge_1_std": 0.02165141816186965,
+  "frac_ge_05_std": 0.013374113661571704,
+  "top_hits_std": 2.160246899469287,
+  "n_unique_std": 8.286535263104035,
+  "frac_unmeasured_std": 0.0
+ },
+ "n_seeds": 3,
+ "per_seed": [
+  {
+   "n": 512,
+   "fitness_mean": 1.6816992448016093,
+   "fitness_median": 1.4859946078,
+   "frac_ge_1": 0.66796875,
+   "frac_ge_05": 0.796875,
+   "top_hits": 6,
+   "n_unique": 230,
+   "frac_unmeasured": 0.0
+  },
+  {
+   "n": 512,
+   "fitness_mean": 1.7595215941388365,
+   "fitness_median": 1.4859946078,
+   "frac_ge_1": 0.669921875,
+   "frac_ge_05": 0.826171875,
+   "top_hits": 10,
+   "n_unique": 237,
+   "frac_unmeasured": 0.0
+  },
+  {
+   "n": 512,
+   "fitness_mean": 1.6592309794404194,
+   "fitness_median": 1.45247248726,
+   "frac_ge_1": 0.623046875,
+   "frac_ge_05": 0.798828125,
+   "top_hits": 5,
+   "n_unique": 250,
+   "frac_unmeasured": 0.0
+  }
+ ],
+ "note": "eps/x0 deviations are fp32 reduction-order scale; the RNG streams differ by design, so parity is trajectory-level under shared noise, not seed-identical draws"
+}

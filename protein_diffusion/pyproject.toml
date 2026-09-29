@@ -1,0 +1,31 @@
+[project]
+name = "protein-diffusion"
+version = "0.1.0"
+description = "DDPM over a real protein fitness landscape with oracle-evaluated generation"
+requires-python = ">=3.9"
+dependencies = [
+    "numpy",
+    "pandas",
+    "pyarrow",
+    "torch",
+    "pyyaml",
+    "snakemake",
+    "pulp<3",  # snakemake 7.x calls pulp.list_solvers (removed in pulp 3.x)
+]
+
+[project.optional-dependencies]
+serve = ["fastapi>=0.110", "uvicorn>=0.29"]
+# torchrun on py<3.10 needs the importlib_metadata backport for rendezvous
+ddp = ["importlib-metadata; python_version<'3.10'"]
+# Flax port of the denoiser for cross-framework parity (py3.9 ceiling)
+jax = ["jax[cpu]==0.4.30", "flax==0.8.5"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,31 @@
+# Conditional DDPM over the GB1 one-hot space: train on the FULL measured
+# landscape with fitness conditioning + classifier-free guidance, then
+# steer generation toward high fitness and score against the oracle.
+# (v1 trained only on fit variants -> memorization; see README trail.)
+
+dataset:
+  url: "https://github.com/J-SNACKKB/FLIP/raw/main/splits/gb1/four_mutations_full_data.csv.zip"
+  variant_col: "Variants"
+  fitness_col: "Fitness"
+
+model:
+  timesteps: 300
+  hidden: 256
+  lr: 0.001
+  epochs: 20        # 149k rows vs 5.8k in v1, fewer passes needed
+  batch_size: 512
+  seed: 7
+
+generate:
+  n_samples: 512
+  n_seeds: 8          # replicate sampling chains; model is fixed
+  cond_drop: 0.15     # CFG training dropout on the condition channel
+  cond_fitness: 3.0   # sample conditioned on log1p(3.0)
+  guidance_w_low: 4.0 # CFG dose-response mid point
+  guidance_w: 8.0     # CFG scale
+  baseline_mu: [1.0, 2.0]  # mutational baseline: Poisson(mu) subs, min 1,
+                           # parents drawn from variants >= cond_fitness
+
+evaluation:
+  n_random_seeds: 20      # random-variant baseline replicates, same n
+  top_k: 100

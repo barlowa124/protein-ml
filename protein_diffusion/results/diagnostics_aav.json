@@ -1,0 +1,34 @@
+{
+ "dataset": {
+  "n_variants": 38293,
+  "seq_len": 28,
+  "alphabet_size": 21
+ },
+ "library": {
+  "pairwise_hamming_median": 7.0,
+  "nearest_member_dist_median": 2.0,
+  "site_entropy_median_nats": 0.8700576232466677,
+  "uniform_entropy_nats": 3.044522437723423,
+  "modal_match_mean": 0.8351702008928572,
+  "sampled_pairs": 4000,
+  "probe_members": 512,
+  "ref_subset": 4096,
+  "seed": 2026
+ },
+ "generated": {
+  "unconditioned": {
+   "n": 512,
+   "n_unique": 512,
+   "min_library_dist_median": 22.0,
+   "modal_match_mean": 0.09221540178571427,
+   "measured_fraction": 0.0
+  },
+  "guided": {
+   "n": 512,
+   "n_unique": 512,
+   "min_library_dist_median": 23.0,
+   "modal_match_mean": 0.07219587053571427,
+   "measured_fraction": 0.0
+  }
+ }
+}

@@ -1,0 +1,28 @@
+{
+ "git": "3e1f688302+dirty",
+ "versions": {
+  "torch": "2.8.0",
+  "numpy": "2.0.2"
+ },
+ "inputs": [
+  {
+   "path": "data/processed/gb1.parquet",
+   "sha256": "514997a63dddc66d9eed7f0062c6916226ea67bdc28a1fd094b489ab5dea44f1"
+  }
+ ],
+ "ddp": {
+  "backend": "gloo",
+  "world_size": 2,
+  "rank": 0,
+  "epochs": 20,
+  "batch_size": 512,
+  "rank0_losses_tail": [
+   0.17435355318875045,
+   0.1770550943309989,
+   0.1753577212642007,
+   0.17455439299951192,
+   0.1750853137004896
+  ],
+  "wall_seconds": 9.1
+ }
+}

@@ -1,0 +1,20 @@
+{
+  "created_utc": "2026-09-26T05:10:50.764386+00:00",
+  "git": "0bd4208de4+dirty",
+  "versions": {
+    "numpy": "2.0.2",
+    "pandas": "2.3.3",
+    "torch": "2.8.0"
+  },
+  "config_sha256": "45913f8c90f8f2028b0e9278cbca877e1791ac777af930629f19abc019fefd97",
+  "inputs": [
+    {
+      "path": "data/processed/gb1.parquet",
+      "sha256": "514997a63dddc66d9eed7f0062c6916226ea67bdc28a1fd094b489ab5dea44f1"
+    },
+    {
+      "path": "data/processed/ddpm_ddp.pt",
+      "sha256": "718c3024ae16c79e10884cc6d20599da309f9aa538db8b5f8fddd06bdcb93fb7"
+    }
+  ]
+}

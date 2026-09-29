@@ -1,0 +1,33 @@
+# Conditional DDPM over the AAV2 capsid-viability landscape (Ogden et al.
+# 2019, FLIP mirror): second-landscape replication of the GB1 result.
+# 28-aa mutated_region, '*' = stop variants (real dead variants, kept).
+# Score is log viability (min -11) -> shift_log1p conditioning transform.
+
+dataset:
+  url: "https://github.com/J-SNACKKB/FLIP/raw/main/splits/aav/full_data.csv.zip"
+  variant_col: "mutated_region"
+  fitness_col: "score"
+  variant_regex: "[ACDEFGHIKLMNPQRSTVWY*]{28}"
+  alphabet: "ACDEFGHIKLMNPQRSTVWY*"
+  transform: "shift_log1p"
+
+model:
+  timesteps: 300
+  hidden: 256
+  lr: 0.001
+  epochs: 20
+  batch_size: 512
+  seed: 7
+
+generate:
+  n_samples: 512
+  n_seeds: 8
+  cond_drop: 0.15
+  cond_fitness: 5.0   # ~top 1% of the landscape
+  guidance_w_low: 4.0
+  guidance_w: 8.0
+  baseline_mu: [1.0, 2.0]
+
+evaluation:
+  n_random_seeds: 20
+  top_k: 100
