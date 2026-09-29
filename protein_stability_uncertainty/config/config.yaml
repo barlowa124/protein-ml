@@ -1,0 +1,26 @@
+# Sequence -> melting point regression on the FLIP meltome dataset.
+# Headline split is the FLIP `mixed` split: held-out clusters are
+# <=20% sequence identity to anything in training: the protein analog
+# of a scaffold split, so random-split optimism doesn't contaminate
+# the uncertainty claims.
+
+dataset:
+  url: "https://github.com/J-SNACKKB/FLIP/raw/main/splits/meltome/splits.zip"
+  csv_name: "splits/mixed_split.csv"
+  max_len: 1024            # ESM-2 context cap; longer seqs truncated (logged)
+
+encoder:
+  kind: "esm2"             # or "composition" for the no-LM baseline
+  model_name: "facebook/esm2_t6_8M_UR50D"
+  batch_size: 32           # length-sorted batches keep padding cheap
+  token_budget: 8192       # padded tokens per batch (bounds attn memory)
+
+model:
+  kind: "ridge"            # ridge on mean-pooled embeddings
+  alpha: 10.0
+
+evaluation:
+  conformal_alpha: 0.10    # target 90% marginal coverage
+  ad_bins: 4               # applicability-domain quartiles by distance
+                           # to the training centroid
+  seed: 0

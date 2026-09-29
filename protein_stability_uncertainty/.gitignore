@@ -1,0 +1,6 @@
+data/
+*.npy
+__pycache__/
+.pytest_cache/
+.snakemake/
+.venv/

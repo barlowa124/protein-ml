@@ -1,0 +1,8 @@
+{
+  "python": "3.9.6",
+  "git_rev": "2cc5f6aa575eb452e71882258c2791f4f43290c5",
+  "config_sha256": "6cdb4b5b7fd0ca1e6a0a2a309741b76b0ee5371e531e25c0d7653de705ecea77",
+  "inputs": {
+    "data/processed/meltome.parquet": "8dff9274c2fda2648370461a5936d128343ea1909641232bd40498415fab289f"
+  }
+}
