@@ -1,0 +1,44 @@
+# Encoder ablation on GB1: same landscape, same schedule, only the feature
+# space changes: position-wise one-hot -> ESM-2 embeddings of the variant
+# substituted into the WT GB1 sequence (bare 4-AA strings carry no signal
+# for a protein LM; context_seq gives the model the rest of the domain).
+# WT sites V39/D40/G41/V54 -> 0-indexed positions 38, 39, 40, 53.
+
+dataset:
+  name: "gb1_flip"
+  url: "https://github.com/J-SNACKKB/FLIP/raw/main/splits/gb1/four_mutations_full_data.csv.zip"
+  variant_col: "Variants"
+  fitness_col: "Fitness"
+  variant_regex: "[ACDEFGHIKLMNPQRSTVWY]{4}"
+  alphabet: "ACDEFGHIKLMNPQRSTVWY"
+  transform: "log1p"
+
+encoder:
+  kind: "esm2"
+  model_name: "facebook/esm2_t6_8M_UR50D"
+  context_seq: "MTYKLILNGKTLKGETTTEAVDAATAEKVFKQYANDNGVDGEWTYDDATKTFTVTE"
+  context_sites: [38, 39, 40, 53]
+  batch_size: 256
+
+experiment:
+  n_init: 96
+  batch_size: 24
+  budget: 480
+  seed: 13
+  n_active_seeds: 8
+  n_random_seeds: 20
+
+surrogate:
+  kind: "gp"
+  length_scale: 0.4   # measured on the embeddings: median pairwise distance
+                      # of a 2k-variant sample is 0.51 (q10 0.38, q90 0.67) —
+                      # the mean-pooled space is nearly isotropic, so the
+                      # kernel needs a sub-1 scale to see any correlation
+
+acquisition:
+  kind: "ucb"
+  kappa: 2.0
+  xi: 0.01
+
+evaluation:
+  top_k: 100

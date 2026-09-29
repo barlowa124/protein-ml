@@ -1,0 +1,32 @@
+# Second landscape: AAV2 capsid viability (Ogden et al., Science 2019;
+# FLIP mirror). 28-aa mutated region, '*' = stop variants (real dead
+# variants, kept since they are the landscape). Score is log-scale viability,
+# already symmetric -> identity transform.
+
+dataset:
+  name: "aav_flip"
+  url: "https://github.com/J-SNACKKB/FLIP/raw/main/splits/aav/full_data.csv.zip"
+  variant_col: "mutated_region"
+  fitness_col: "score"
+  variant_regex: "[ACDEFGHIKLMNPQRSTVWY*]{28}"
+  alphabet: "ACDEFGHIKLMNPQRSTVWY*"
+  transform: "identity"
+
+experiment:
+  n_init: 96
+  batch_size: 24
+  budget: 480
+  seed: 13
+  n_active_seeds: 8
+  n_random_seeds: 20
+
+surrogate:
+  kind: "gp"
+
+acquisition:
+  kind: "ucb"
+  kappa: 2.0
+  xi: 0.01
+
+evaluation:
+  top_k: 100

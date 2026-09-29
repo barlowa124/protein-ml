@@ -1,0 +1,31 @@
+# Active-learning experiment-selection simulation over the GB1 fitness
+# landscape (Wu et al., eLife 2016; FLIP mirror). All scientific knobs live
+# here; source contains no magic numbers.
+
+dataset:
+  name: "gb1_flip"
+  url: "https://github.com/J-SNACKKB/FLIP/raw/main/splits/gb1/four_mutations_full_data.csv.zip"
+  variant_col: "Variants"     # 4-AA combo string, e.g. VDGV
+  fitness_col: "Fitness"
+  variant_regex: "[ACDEFGHIKLMNPQRSTVWY]{4}"
+  alphabet: "ACDEFGHIKLMNPQRSTVWY"
+  transform: "log1p"          # surrogate sees log-enrichment (heavy tail)
+
+experiment:
+  n_init: 96          # initial random screen (~one 96-well plate)
+  batch_size: 24      # variants measured per AL round
+  budget: 480         # total experimental budget incl. n_init
+  seed: 13
+  n_active_seeds: 8   # AL trajectory replicates, matched against the random baseline
+  n_random_seeds: 20  # random-selection baseline replicates
+
+surrogate:
+  kind: "gp"          # gp | rf
+
+acquisition:
+  kind: "ucb"         # ucb | ei | greedy
+  kappa: 2.0          # exploration weight (ucb)
+  xi: 0.01            # improvement margin (ei)
+
+evaluation:
+  top_k: 100          # "hits": true top-k variants by measured fitness

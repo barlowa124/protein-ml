@@ -1,0 +1,40 @@
+# Encoder ablation on AAV2: the 28-aa mutated_region is long enough to
+# embed directly (no context_seq needed, unlike GB1's 4-AA strings).
+# Embedding distance is essentially decorrelated from Hamming distance
+# (the embedding sees mutation composition/context, not site count), so
+# this is a real alternative feature space, not a recoding.
+
+dataset:
+  name: "aav_flip"
+  url: "https://github.com/J-SNACKKB/FLIP/raw/main/splits/aav/full_data.csv.zip"
+  variant_col: "mutated_region"
+  fitness_col: "score"
+  variant_regex: "[ACDEFGHIKLMNPQRSTVWY*]{28}"
+  alphabet: "ACDEFGHIKLMNPQRSTVWY*"
+  transform: "identity"
+
+encoder:
+  kind: "esm2"
+  model_name: "facebook/esm2_t6_8M_UR50D"
+  batch_size: 256
+
+experiment:
+  n_init: 96
+  batch_size: 24
+  budget: 480
+  seed: 13
+  n_active_seeds: 8
+  n_random_seeds: 20
+
+surrogate:
+  kind: "gp"
+  length_scale: 1.2   # measured: median pairwise ESM-2 distance on a 2k
+                      # sample is 1.19 (q10 0.79, q90 1.78)
+
+acquisition:
+  kind: "ucb"
+  kappa: 2.0
+  xi: 0.01
+
+evaluation:
+  top_k: 100

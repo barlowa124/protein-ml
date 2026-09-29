@@ -1,0 +1,29 @@
+[project]
+name = "al-loop"
+version = "0.1.0"
+description = "Active-learning experiment-selection simulation over a real protein fitness landscape"
+requires-python = ">=3.9"
+dependencies = [
+    "numpy",
+    "pandas",
+    "pyarrow",
+    "scikit-learn",
+    "scipy",
+    "matplotlib",
+    "pyyaml",
+    "snakemake",
+    "pulp<3",  # snakemake 7.x calls pulp.list_solvers (removed in pulp 3.x)
+]
+
+[project.optional-dependencies]
+esm = ["torch", "transformers"]  # esm2 encoder in al_loop.encode
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
