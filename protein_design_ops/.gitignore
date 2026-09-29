@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.egg-info/
+.venv/
+.snakemake/
+data/processed/
+data/raw/*.pdb
+!**/.gitkeep
+outputs/
+.DS_Store
+results/*/folds/

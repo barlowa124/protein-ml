@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "protein-design-ops"
+version = "0.1.0"
+description = "Backbone-conditioned sequence design + independent rescoring: ProteinMPNN candidates ranked against ESM-2 zero-shot fitness"
+requires-python = ">=3.10"
+dependencies = [
+    "numpy",
+    "pandas",
+    "scipy",
+    "matplotlib",
+    "pyyaml",
+    "torch",
+    "transformers",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "snakemake>=8"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,25 @@
+# Second backbone: ubiquitin (76 aa), natural globular fold, contrasts the
+# engineered trp-cage miniprotein in the default config. Run with:
+#   DESIGN_CONFIG=config/config_1ubq.yaml snakemake
+# Outputs land in results/1ubq/ and data/processed/1ubq/.
+
+backbone:
+  id: "1ubq"
+  pdb: "tests/fixtures/1UBQ.pdb"
+  chain: "A"
+
+mpnn:
+  repo_path: "../proteinmpnn-ext"
+  run_script: "protein_mpnn_run.py"
+  weights: "vanilla_model_weights/v_48_020.pt"
+  model_name: "v_48_020"
+  num_seq_per_target: 16
+  sampling_temp: 0.1
+  batch_size: 1
+  seed: 37  # upstream treats 0 as "pick a random seed" (falsy check)
+
+esm:
+  model: "facebook/esm2_t6_8M_UR50D"   # 8M params, CPU-feasible zero-shot scorer
+
+report:
+  top_k: 3

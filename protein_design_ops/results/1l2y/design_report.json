@@ -1,0 +1,74 @@
+{
+  "provenance": {
+    "backbone": {
+      "id": "1l2y",
+      "pdb": "tests/fixtures/1L2Y.pdb",
+      "chain": "A",
+      "n_residues": 20
+    },
+    "generator": {
+      "tool": "ProteinMPNN (dauparas/ProteinMPNN, external)",
+      "repo_commit": "3cb12a6a1eff0141f72cd07eed262de285cb9537",
+      "model_name": "v_48_020",
+      "weights": "vanilla_model_weights/v_48_020.pt",
+      "num_seq_per_target": 16,
+      "sampling_temp": 0.1,
+      "seed": 37
+    },
+    "scorer": {
+      "tool": "ESM-2 masked-marginal PLL",
+      "model": "facebook/esm2_t6_8M_UR50D"
+    },
+    "git_commit": "1b15f53bd5619e3533ff537da907b146e694ca18",
+    "versions": {
+      "torch": "2.14.0",
+      "transformers": "5.17.0",
+      "numpy": "2.4.6",
+      "scipy": "1.17.1"
+    }
+  },
+  "n_designed": 16,
+  "native_seq": "NLYIQWLKDGGPSSGRPPPS",
+  "native_esm_pll": -2.8665,
+  "mean_pairwise_identity": 0.681,
+  "mean_seq_recovery": 0.378,
+  "score_correlation_spearman": -0.632,
+  "consensus_top3": [
+    {
+      "seq": "AALAEWEARGGAAAGLPRPT",
+      "mpnn_score": 1.1014,
+      "esm_pll": -2.2555,
+      "seq_recovery": 0.3,
+      "plddt_mean": 76.2,
+      "ptm": 0.114
+    },
+    {
+      "seq": "AARQEWLARGGAAAGRPAPV",
+      "mpnn_score": 1.109,
+      "esm_pll": -2.3425,
+      "seq_recovery": 0.4,
+      "plddt_mean": 74.2,
+      "ptm": 0.111
+    },
+    {
+      "seq": "AALQEWLARGGAAAGEPRPV",
+      "mpnn_score": 1.1427,
+      "esm_pll": -2.2167,
+      "seq_recovery": 0.35,
+      "plddt_mean": 68.7,
+      "ptm": 0.095
+    }
+  ],
+  "designed_esm_pll": {
+    "min": -2.883,
+    "max": -2.217,
+    "mean": -2.585
+  },
+  "fold_screen": {
+    "n_folded": 16,
+    "n_unfolded": 0,
+    "native_plddt": 76.9,
+    "designed_plddt_mean": 73.6,
+    "n_confident_ge70": 13
+  }
+}

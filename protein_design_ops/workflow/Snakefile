@@ -1,0 +1,72 @@
+"""design-ops DAG:
+
+    backbone -> generate (ProteinMPNN) -> score (ESM-2) -> report
+
+Outputs are parameterized by config.backbone.id so multiple backbones
+can coexist: run an alternate config with
+    DESIGN_CONFIG=config/config_1ubq.yaml snakemake
+"""
+
+import os
+import sys
+
+configfile: os.environ.get("DESIGN_CONFIG", "config/config.yaml")
+
+PY = sys.executable  # keeps the DAG on the project venv
+BB = config["backbone"].get("id", "run")
+PROC = f"data/processed/{BB}"
+RES = f"results/{BB}"
+
+
+rule all:
+    input:
+        f"{RES}/design_report.json",
+        f"{RES}/consensus.png",
+
+
+rule backbone:
+    output:
+        f"{PROC}/backbone.json",
+    shell:
+        "{PY} -m design_ops.backbone {output}"
+
+
+rule generate:
+    input:
+        f"{PROC}/backbone.json",
+    output:
+        f"{PROC}/candidates.json",
+    shell:
+        "{PY} -m design_ops.generate {input} {output}"
+
+
+rule score:
+    input:
+        f"{PROC}/candidates.json",
+    output:
+        f"{PROC}/scores.json",
+    shell:
+        "{PY} -m design_ops.score {input} {output}"
+
+
+rule fold:
+    # ESMFold confidence screen; downloads ~2.4 GB weights on first run
+    input:
+        f"{PROC}/scores.json",
+    output:
+        f"{PROC}/fold.json",
+    shell:
+        "{PY} -m design_ops.fold {input} {output} {RES}/folds"
+
+
+rule report:
+    input:
+        scores=f"{PROC}/scores.json",
+        backbone=f"{PROC}/backbone.json",
+        fold=f"{PROC}/fold.json",
+    output:
+        report=f"{RES}/design_report.json",
+        figure=f"{RES}/consensus.png",
+    shell:
+        "{PY} -m design_ops.report {input.scores} {input.backbone} "
+        "{output.report} {output.figure} {input.fold}"
