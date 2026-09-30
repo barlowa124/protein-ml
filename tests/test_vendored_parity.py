@@ -21,6 +21,13 @@ VENDORED = [
 ESM_CACHE_SHA256 = \
     "2c80f1d43fffe47c126ce70e0f7342ced3458a3d902105c6275cacc338295531"
 
+# Same arrangement for the canonical conformal helpers: mol-ml/
+# comp_tox_pipeline vendors it as eval/conformal_shared.py.
+CONFORMAL = ROOT / "protein_stability_uncertainty" / "src" / "protstab" / \
+    "conformal.py"
+CONFORMAL_SHA256 = \
+    "fcba54721a3f106e3864ab43ad0cb61caf273c41426d7bfa649b542f5f72af00"
+
 
 class VendoredParityTests(unittest.TestCase):
     def test_esm_cache_copies_identical(self):
@@ -40,6 +47,15 @@ class VendoredParityTests(unittest.TestCase):
                 f"{p} no longer matches the shared vendored digest — "
                 "mol-ml/dti_fusion carries the same file; sync both repos "
                 "and update the pin together")
+
+    def test_conformal_cross_repo_pin(self):
+        import hashlib
+        self.assertEqual(
+            hashlib.sha256(CONFORMAL.read_bytes()).hexdigest(),
+            CONFORMAL_SHA256,
+            "protstab/conformal.py no longer matches the shared digest — "
+            "mol-ml/comp_tox_pipeline vendors the same helpers; sync both "
+            "repos and update the pin together")
 
 
 if __name__ == "__main__":
