@@ -15,6 +15,13 @@ VENDORED = [
 ]
 
 
+# Cross-repo pin: mol-ml/dti_fusion vendors the same file and pins this
+# digest. Editing any copy on either side trips the pin — update all
+# copies and the constant together.
+ESM_CACHE_SHA256 = \
+    "2c80f1d43fffe47c126ce70e0f7342ced3458a3d902105c6275cacc338295531"
+
+
 class VendoredParityTests(unittest.TestCase):
     def test_esm_cache_copies_identical(self):
         texts = [p.read_bytes() for p in VENDORED]
@@ -23,6 +30,16 @@ class VendoredParityTests(unittest.TestCase):
                 texts[0], t,
                 f"{p} drifted from {VENDORED[0]} — update both copies "
                 "together or this test is failing for a real reason")
+
+    def test_esm_cache_cross_repo_pin(self):
+        import hashlib
+        for p in VENDORED:
+            self.assertEqual(
+                hashlib.sha256(p.read_bytes()).hexdigest(),
+                ESM_CACHE_SHA256,
+                f"{p} no longer matches the shared vendored digest — "
+                "mol-ml/dti_fusion carries the same file; sync both repos "
+                "and update the pin together")
 
 
 if __name__ == "__main__":
