@@ -111,6 +111,11 @@ in themselves, and the RMSD says they stay on the backbone. Both are
 model outputs, and the same caveat applies. Predicted self-consistency
 is not an experimental structure.
 
+The same holds on 1UBQ (76 aa). All 16 designs stay below 2.0 A (mean
+0.90 A), with the native at 0.835 A and the top-3 consensus picks at
+0.71, 0.82, and 1.03 A. Designs sit right at the native's own
+self-consistency band on a natural fold four times longer.
+
 `design_report.json` carries a `provenance` block covering backbone id,
 ProteinMPNN upstream commit + weights, sampling params/seed, the
 ESM-2 model id, and which fold backend ran (`structure_predictor`),

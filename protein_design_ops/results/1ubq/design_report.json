@@ -19,7 +19,12 @@
       "tool": "ESM-2 masked-marginal PLL",
       "model": "facebook/esm2_t6_8M_UR50D"
     },
-    "git_commit": "c98724b557df73d78557b073688ba0aee4c7475d",
+    "structure_predictor": {
+      "backend": "esmfold",
+      "tool": "ESMFold (facebook/esmfold_v1)",
+      "model": "facebook/esmfold_v1"
+    },
+    "git_commit": "ba9906d9a2c9ddd8aee0a92baa6def519ecc0fb0",
     "versions": {
       "torch": "2.14.0",
       "transformers": "5.17.0",
@@ -40,7 +45,8 @@
       "esm_pll": -1.8335,
       "seq_recovery": 0.5789,
       "plddt_mean": 80.2,
-      "ptm": 0.856
+      "ptm": 0.856,
+      "bb_rmsd": 0.71
     },
     {
       "seq": "MTIYVKFEDGTTLELEVNPDDTIAELKKKIEEKTGIPPEEQVLIYKGKELKDDKTLADYNIKEGDTLELKLKPKGG",
@@ -48,7 +54,8 @@
       "esm_pll": -1.8415,
       "seq_recovery": 0.5263,
       "plddt_mean": 80.4,
-      "ptm": 0.856
+      "ptm": 0.856,
+      "bb_rmsd": 0.818
     },
     {
       "seq": "MKIKVEFEDGTTLELEVKDSDTIAELKKKIEKKTGIPPEEQKLIYKGKVLKDDKTLADYNIKEGDTLKLELVPKGG",
@@ -56,7 +63,8 @@
       "esm_pll": -1.9057,
       "seq_recovery": 0.5132,
       "plddt_mean": 80.2,
-      "ptm": 0.858
+      "ptm": 0.858,
+      "bb_rmsd": 1.03
     }
   ],
   "designed_esm_pll": {
@@ -65,10 +73,18 @@
     "mean": -1.924
   },
   "fold_screen": {
+    "backend": "esmfold",
     "n_folded": 16,
     "n_unfolded": 0,
     "native_plddt": 77.4,
     "designed_plddt_mean": 80.6,
-    "n_confident_ge70": 16
+    "n_confident_ge70": 16,
+    "self_consistency": {
+      "n_aligned": 16,
+      "bb_rmsd_mean": 0.9,
+      "bb_rmsd_median": 0.88,
+      "n_below_2A": 16,
+      "native_bb_rmsd": 0.835
+    }
   }
 }
