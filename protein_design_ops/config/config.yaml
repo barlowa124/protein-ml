@@ -28,8 +28,8 @@ fold:
 chai:
   # chai_lab requires torch<2.7, incompatible with this env's torch.
   # Keep it in a separate env and point command at that env's binary,
-  # e.g. /tmp/chai-venv/bin/chai. ~4 GB weights on first run, needs GPU
-  # for practical runtimes.
+  # e.g. ~/CascadeProjects/chai-venv/bin/chai-lab. ~6 GB weights on
+  # first run, needs GPU for practical runtimes.
   command: "chai-lab"     # binary name from pip install chai_lab
   extra_args: ["--device", "cpu"]   # set [] to let chai auto-pick GPU
 

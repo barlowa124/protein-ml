@@ -41,4 +41,4 @@ design sits where the two objectives trade off.
   first run. Apache-2.0 license.
 - `chaidiscovery/chai-lab` (`pip install chai_lab`), invoked as a
   subprocess via `config.chai.command`. It requires torch<2.7 so it lives
-  in its own environment. Weights download (~4 GB) on first run.
+  in its own environment. Weights download (~6 GB) on first run.

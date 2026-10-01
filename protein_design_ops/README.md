@@ -39,7 +39,7 @@ in-process (the default). `chai1` invokes `chai-lab fold` in a separate
 environment because chai_lab pins `torch<2.7`, which conflicts with the
 torch this environment already runs. Point `config.chai.command` at that
 env's binary and pass flags via `config.chai.extra_args`. Chai-1
-downloads ~4 GB of weights on first use and is CPU-tolerable only at
+downloads ~6 GB of weights on first use and is CPU-tolerable only at
 reduced diffusion settings (e.g. `--num-diffn-timesteps 50
 --num-diffn-samples 1`). Both backends write the same record schema, so
 `selfconsistency` and `report` are backend-agnostic. The report's
