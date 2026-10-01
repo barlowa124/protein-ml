@@ -65,8 +65,10 @@ rule fold:
         module=("design_ops.chai"
                 if config.get("fold", {}).get("backend") == "chai1"
                 else "design_ops.fold"),
+    # fold_parts caches one JSON per sequence so a killed run resumes
     shell:
-        "{PY} -m {params.module} {input} {output} {RES}/folds"
+        "{PY} -m {params.module} {input} {output} {RES}/folds "
+        "{PROC}/fold_parts"
 
 
 rule selfconsistency:

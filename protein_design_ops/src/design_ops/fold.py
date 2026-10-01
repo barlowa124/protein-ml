@@ -43,35 +43,56 @@ def fold_one(seq: str, model, torch) -> dict:
 
 
 def fold_records(records: list[dict], model=None, torch=None,
-                 model_id: str = "facebook/esmfold_v1") -> list[dict]:
-    """Attach fold metrics to every record; native folds too as reference."""
+                 model_id: str = "facebook/esmfold_v1",
+                 checkpoint_dir: str | None = None) -> list[dict]:
+    """Attach fold metrics to every record; native folds too as reference.
+
+    With checkpoint_dir, each folded record is also written to
+    <dir>/<idx>.json and existing ones are reused — a killed run resumes
+    instead of restarting expensive folds.
+    """
     if model is None:
         model, torch = _lazy_model(model_id)
+    parts = Path(checkpoint_dir) if checkpoint_dir else None
+    if parts:
+        parts.mkdir(parents=True, exist_ok=True)
     out = []
     for i, rec in enumerate(records):
-        if not rec.get("seq"):
-            out.append({**rec, "fold": None, "fold_error": "empty seq"})
+        part = parts / f"{i:03d}.json" if parts else None
+        if part and part.exists():
+            print(f"  folded {i + 1}/{len(records)} (checkpoint)",
+                  flush=True)
+            out.append(json.loads(part.read_text()))
             continue
-        try:
-            f = fold_one(rec["seq"], model, torch)
-            print(f"  folded {i + 1}/{len(records)} "
-                  f"plddt={f['plddt_mean']:.1f}", flush=True)
-            out.append({**rec, "fold": {k: f[k] for k in
-                                        ("plddt_mean", "plddt_min", "ptm")},
-                        "pdb": f["pdb"]})
-        except Exception as e:  # fold failures are data, not crashes
-            out.append({**rec, "fold": None, "fold_error": str(e)})
+        if not rec.get("seq"):
+            res = {**rec, "fold": None, "fold_error": "empty seq"}
+        else:
+            try:
+                f = fold_one(rec["seq"], model, torch)
+                print(f"  folded {i + 1}/{len(records)} "
+                      f"plddt={f['plddt_mean']:.1f}", flush=True)
+                res = {**rec, "fold": {k: f[k] for k in
+                                       ("plddt_mean", "plddt_min",
+                                        "ptm")},
+                       "pdb": f["pdb"]}
+            except Exception as e:  # fold failures are data, not crashes
+                res = {**rec, "fold": None, "fold_error": str(e)}
+        out.append(res)
+        if part:
+            part.write_text(json.dumps(res))
     return out
 
 
 def main() -> None:
     scores_json, out_json, folds_dir = sys.argv[1:4]
+    parts_dir = sys.argv[4] if len(sys.argv) > 4 else None
     from design_ops.config import load_config
     cfg = load_config()
     records = json.loads(Path(scores_json).read_text())
     folded = fold_records(
         records,
-        model_id=cfg.get("fold", {}).get("model", "facebook/esmfold_v1"))
+        model_id=cfg.get("fold", {}).get("model", "facebook/esmfold_v1"),
+        checkpoint_dir=parts_dir)
     folds = Path(folds_dir)
     folds.mkdir(parents=True, exist_ok=True)
     clean = []

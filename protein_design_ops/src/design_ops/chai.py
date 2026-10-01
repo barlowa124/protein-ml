@@ -106,7 +106,12 @@ def fold_one(
     return metrics
 
 
-def fold_records(records: list[dict], cfg: dict, folds_dir: Path) -> list[dict]:
+def fold_records(
+    records: list[dict],
+    cfg: dict,
+    folds_dir: Path,
+    checkpoint_dir: str | None = None,
+) -> list[dict]:
     chai = cfg.get("chai", {})
     command = chai.get("command", "chai")
     extra = chai.get("extra_args") or []
@@ -117,43 +122,54 @@ def fold_records(records: list[dict], cfg: dict, folds_dir: Path) -> list[dict]:
             "(chai_lab requires torch<2.7, keep it out of this env)"
         )
     folds_dir.mkdir(parents=True, exist_ok=True)
+    parts = Path(checkpoint_dir) if checkpoint_dir else None
+    if parts:
+        parts.mkdir(parents=True, exist_ok=True)
     out = []
     for i, rec in enumerate(records):
+        part = parts / f"{i:03d}.json" if parts else None
+        if part and part.exists():
+            print(f"  chai {i + 1}/{len(records)} (checkpoint)",
+                  flush=True)
+            out.append(json.loads(part.read_text()))
+            continue
         tag = f"{i:03d}_{'native' if rec.get('is_native') else 'design'}"
         if not rec.get("seq"):
-            out.append({**rec, "fold": None, "fold_error": "empty seq"})
-            continue
-        try:
-            with tempfile.TemporaryDirectory() as tmp:
-                f = fold_one(rec["seq"], command, Path(tmp), extra)
-                cif = Path(f.pop("structure_path"))
-                dest = folds_dir / f"{tag}.cif"
-                shutil.copy(cif, dest)
-            print(
-                f"  chai {i + 1}/{len(records)} "
-                f"agg={f.get('aggregate_score')}",
-                flush=True,
-            )
-            out.append(
-                {
+            res = {**rec, "fold": None, "fold_error": "empty seq"}
+        else:
+            try:
+                with tempfile.TemporaryDirectory() as tmp:
+                    f = fold_one(rec["seq"], command, Path(tmp), extra)
+                    cif = Path(f.pop("structure_path"))
+                    dest = folds_dir / f"{tag}.cif"
+                    shutil.copy(cif, dest)
+                print(
+                    f"  chai {i + 1}/{len(records)} "
+                    f"agg={f.get('aggregate_score')}",
+                    flush=True,
+                )
+                res = {
                     **rec,
                     "fold": f,
                     "structure_path": str(dest),
                     "fold_backend": "chai1",
                 }
-            )
-        except Exception as e:  # fold failures are data, not crashes
-            out.append({**rec, "fold": None, "fold_error": str(e)})
+            except Exception as e:  # fold failures are data, not crashes
+                res = {**rec, "fold": None, "fold_error": str(e)}
+        out.append(res)
+        if part:
+            part.write_text(json.dumps(res))
     return out
 
 
 def main() -> None:
     scores_json, out_json, folds_dir = sys.argv[1:4]
+    parts_dir = sys.argv[4] if len(sys.argv) > 4 else None
     from design_ops.config import load_config
 
     cfg = load_config()
     records = json.loads(Path(scores_json).read_text())
-    folded = fold_records(records, cfg, Path(folds_dir))
+    folded = fold_records(records, cfg, Path(folds_dir), parts_dir)
     Path(out_json).write_text(json.dumps(folded, indent=1))
     n_ok = sum(1 for r in folded if r["fold"])
     print(f"chai folded {n_ok}/{len(folded)} sequences -> {out_json}")

@@ -159,6 +159,20 @@ class TestFoldRecords:
         assert out[-1]["fold"] is None
         assert out[-1]["fold_error"] == "empty seq"
 
+    def test_checkpoint_resumes_without_refold(self, tmp_path):
+        parts = tmp_path / "parts"
+        parts.mkdir()
+        (parts / "000.json").write_text(json.dumps(
+            {"seq": "ACDEFGHIK", "is_native": True, "fold_backend": "chai1",
+             "fold": {"aggregate_score": 0.99}, "structure_path": "x.cif"}))
+        chai = _fake_chai(tmp_path, _writer_script(tmp_path))
+        out = fold_records(
+            self._records(), {"chai": {"command": chai}},
+            tmp_path / "folds", str(parts))
+        assert out[0]["fold"]["aggregate_score"] == 0.99  # cached
+        assert out[1]["fold"]["aggregate_score"] == 0.71  # fresh
+        assert (parts / "001.json").exists()
+
     def test_failed_call_recorded_not_raised(self, tmp_path):
         chai = _fake_chai(tmp_path, "echo died >&2; exit 1")
         out = fold_records(self._records(), {"chai": {"command": chai}},

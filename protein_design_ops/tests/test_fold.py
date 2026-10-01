@@ -87,6 +87,23 @@ class TestFoldRecords:
         assert len(list(folds_d.glob("*.pdb"))) == 3
 
 
+class TestFoldCheckpoint:
+    def test_checkpoint_resumes_without_refold(self, tmp_path):
+        # part 0 pre-written: a killed run resumes rather than refolds
+        parts = tmp_path / "parts"
+        parts.mkdir()
+        (parts / "000.json").write_text(json.dumps(
+            {"seq": "ACDEFGHIK", "is_native": True,
+             "fold": {"plddt_mean": 99.0}, "pdb": "ATOM cached"}))
+        model = MockFold()
+        out = fold_records(_records(), model, MockTorch(),
+                           checkpoint_dir=str(parts))
+        assert out[0]["fold"]["plddt_mean"] == 99.0  # cached, not 80
+        assert "ACDEFGHIK" not in model.seen          # never refolded
+        assert out[1]["fold"]["plddt_mean"] == 80.0   # rest fold fresh
+        assert (parts / "001.json").exists()          # and get checkpointed
+
+
 class TestReportFoldMerge:
     def _cfg(self):
         return {
