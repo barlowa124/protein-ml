@@ -9,25 +9,48 @@ the defensible shortlist. The report shows where the models disagree.
 ## Pipeline
 
 ```
-backbone -> generate (ProteinMPNN) -> score (ESM-2) -> fold (ESMFold) -> report
+backbone -> generate (ProteinMPNN) -> score (ESM-2)
+    -> fold (ESMFold or Chai-1) -> selfconsistency -> report
 ```
 
-- `backbone.py` - parse PDB, extract design chain + native sequence
+- `backbone.py` - parse PDB, extract design chain + native sequence +
+  CA coordinates
 - `generate.py` - subprocess driver for upstream ProteinMPNN (external
   clone, not vendored, see `config.mpnn.repo_path`), parses FASTA headers
   carrying MPNN's own score and sequence recovery
 - `score.py` - ESM-2 mean pseudo-log-likelihood per candidate (mask each
   position, log-prob of the residue at that position, average)
 - `fold.py` - ESMFold structure screen: per-design pLDDT/PTM confidence
-  plus the native for reference (~8 GB weights on first run, ~2 min/seq
+  plus the native for reference (~2.4 GB weights on first run, ~2 min/seq
   on CPU; skip with `snakemake report` after removing the fold input)
+- `chai.py` - alternative fold backend. Drives Chai-1 as an external
+  subprocess (`config.chai.command`), collects aggregate score,
+  pTM/ipTM, pLDDT, and the predicted .cif per design
+- `selfconsistency.py` - Kabsch CA RMSD of each predicted structure
+  against the input backbone. A design that only scores well in
+  sequence space but refolds somewhere else stays visible in the report
 - `report.py` - consensus ranking, score correlation, diversity,
-  identity-to-WT, fold-confidence screen, scatter figure
+  identity-to-WT, fold-confidence + backbone-RMSD screens, scatter figure
+
+### Fold backends
+
+`config.fold.backend` selects the structure step. `esmfold` runs
+in-process (the default). `chai1` invokes `chai-lab fold` in a separate
+environment because chai_lab pins `torch<2.7`, which conflicts with the
+torch this environment already runs. Point `config.chai.command` at that
+env's binary and pass flags via `config.chai.extra_args`. Chai-1
+downloads ~4 GB of weights on first use and is CPU-tolerable only at
+reduced diffusion settings (e.g. `--num-diffn-timesteps 50
+--num-diffn-samples 1`). Both backends write the same record schema, so
+`selfconsistency` and `report` are backend-agnostic. The report's
+`provenance.structure_predictor` records which one ran.
 
 ## Quickstart
 
 ```bash
+# from the protein-ml repo root, so mpnn.repo_path resolves:
 git clone https://github.com/dauparas/ProteinMPNN ../proteinmpnn-ext
+cd protein_design_ops
 uv venv --python 3.11 && uv pip install -e ".[dev]"
 .venv/bin/python -m snakemake --cores 2
 ```

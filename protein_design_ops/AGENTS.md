@@ -1,8 +1,13 @@
 # Project Guidance
 
-- ProteinMPNN and ESM-2 are upstream models; this repo is the
-  orchestration and evaluation layer. Credit them explicitly and never
-  present their outputs as our models' work.
+- ProteinMPNN, ESM-2, ESMFold, and Chai-1 are upstream models; this repo
+  is the orchestration and evaluation layer. Credit them explicitly and
+  never present their outputs as our models' work. Keep the fold backend
+  labeled (fold_backend / provenance.structure_predictor) so ESMFold
+  numbers are never reported as Chai-1 numbers or vice versa.
+- Chai-1 runs in a separate environment (chai_lab requires torch<2.7)
+  and is invoked as a subprocess via config.chai.command. Do not install
+  chai_lab into this environment.
 - Generated sequences are computational candidates only — no claim of
   stability, folding, or function without experimental or stronger
   computational validation (e.g. structure prediction of designs).

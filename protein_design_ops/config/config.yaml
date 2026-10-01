@@ -7,8 +7,9 @@ backbone:
 
 mpnn:
   # ProteinMPNN is an external upstream tool (dauparas/ProteinMPNN), NOT
-  # vendored. Clone it separately and point repo_path at it.
-  repo_path: "../proteinmpnn-ext"
+  # vendored. Clone it separately and point repo_path at it; resolved
+  # relative to the package directory (protein-ml/protein_design_ops).
+  repo_path: "../../proteinmpnn-ext"
   run_script: "protein_mpnn_run.py"
   weights: "vanilla_model_weights/v_48_020.pt"
   model_name: "v_48_020"
@@ -21,7 +22,16 @@ esm:
   model: "facebook/esm2_t6_8M_UR50D"   # 8M params, CPU-feasible zero-shot scorer
 
 fold:
-  model: "facebook/esmfold_v1"   # ~8 GB weights on first run; ~2 min/seq CPU
+  backend: "esmfold"        # esmfold | chai1
+  model: "facebook/esmfold_v1"   # ~2.4 GB weights on first run; ~2 min/seq CPU
+
+chai:
+  # chai_lab requires torch<2.7, incompatible with this env's torch.
+  # Keep it in a separate env and point command at that env's binary,
+  # e.g. /tmp/chai-venv/bin/chai. ~4 GB weights on first run, needs GPU
+  # for practical runtimes.
+  command: "chai-lab"     # binary name from pip install chai_lab
+  extra_args: ["--device", "cpu"]   # set [] to let chai auto-pick GPU
 
 report:
   top_k: 3   # consensus shortlist size

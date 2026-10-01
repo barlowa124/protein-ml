@@ -27,7 +27,7 @@ ML).
 |---|---|
 | `protein_diffusion/` | Conditional DDPM over the measured GB1 fitness landscape. Reports memorization fraction and unmeasured-proposal handling as headline metrics. |
 | `protein_stability_uncertainty/` | Sequence-to-melting-point regression with split-conformal intervals, Mondrian binning, and sparse-bin fallback. |
-| `protein_design_ops/` | Orchestration/evaluation layer around ProteinMPNN + ESM-2: backbone parsing, sequence generation, spread-across-temperatures reporting. |
+| `protein_design_ops/` | Closed design loop around upstream tools: ProteinMPNN generation, ESM-2 rescoring, ESMFold or Chai-1 structure prediction, and backbone self-consistency RMSD into a consensus report. |
 | `active_learning_loop/` | GP-UCB active learning over real fitness landscapes, with seeded random-baseline replication. |
 
 ## Running tests

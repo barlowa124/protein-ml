@@ -1,6 +1,9 @@
 """design-ops DAG:
 
-    backbone -> generate (ProteinMPNN) -> score (ESM-2) -> report
+    backbone -> generate (ProteinMPNN) -> score (ESM-2)
+        -> fold (ESMFold or Chai-1, config.fold.backend)
+        -> selfconsistency (designs refolded onto the input backbone)
+        -> report
 
 Outputs are parameterized by config.backbone.id so multiple backbones
 can coexist: run an alternate config with
@@ -50,20 +53,39 @@ rule score:
 
 
 rule fold:
-    # ESMFold confidence screen; downloads ~2.4 GB weights on first run
+    # Structure screen; backend picked by config.fold.backend.
+    # esmfold: in-process, ~2.4 GB weights on first run.
+    # chai1:   subprocess via config.chai.command (separate env,
+    #          chai_lab requires torch<2.7) + ~4 GB weights.
     input:
         f"{PROC}/scores.json",
     output:
         f"{PROC}/fold.json",
+    params:
+        module=("design_ops.chai"
+                if config.get("fold", {}).get("backend") == "chai1"
+                else "design_ops.fold"),
     shell:
-        "{PY} -m design_ops.fold {input} {output} {RES}/folds"
+        "{PY} -m {params.module} {input} {output} {RES}/folds"
+
+
+rule selfconsistency:
+    # CA RMSD of each folded structure vs the input backbone
+    input:
+        fold=f"{PROC}/fold.json",
+        backbone=f"{PROC}/backbone.json",
+    output:
+        f"{PROC}/sc.json",
+    shell:
+        "{PY} -m design_ops.selfconsistency {input.fold} {input.backbone} "
+        "{output}"
 
 
 rule report:
     input:
         scores=f"{PROC}/scores.json",
         backbone=f"{PROC}/backbone.json",
-        fold=f"{PROC}/fold.json",
+        fold=f"{PROC}/sc.json",
     output:
         report=f"{RES}/design_report.json",
         figure=f"{RES}/consensus.png",

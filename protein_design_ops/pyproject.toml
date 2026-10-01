@@ -19,6 +19,7 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest", "snakemake>=8"]
+test = ["pytest"]   # ci.yml installs .[test]
 
 [tool.setuptools.packages.find]
 where = ["src"]

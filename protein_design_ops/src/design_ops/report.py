@@ -86,9 +86,40 @@ def _provenance(backbone: dict, cfg: dict) -> dict:
             "seed": m["seed"],
         },
         "scorer": {"tool": "ESM-2 masked-marginal PLL", "model": cfg["esm"]["model"]},
+        "structure_predictor": _structure_provenance(cfg),
         "git_commit": _git_head("."),
         "versions": _pkg_versions(),
     }
+
+
+def _structure_provenance(cfg: dict) -> dict:
+    """Which fold backend produced the screen; ids differ per backend."""
+    backend = cfg.get("fold", {}).get("backend", "esmfold")
+    if backend == "chai1":
+        return {
+            "backend": "chai1",
+            "tool": "Chai-1 (chaidiscovery/chai-lab, external subprocess)",
+            "command": cfg.get("chai", {}).get("command", "chai"),
+        }
+    return {
+        "backend": "esmfold",
+        "tool": "ESMFold (facebook/esmfold_v1)",
+        "model": cfg.get("fold", {}).get("model", "facebook/esmfold_v1"),
+    }
+
+
+def _fold_fields(fold: dict) -> dict:
+    """Optional fold metrics merged into a consensus entry."""
+    out = {}
+    if fold.get("plddt_mean") is not None:
+        out["plddt_mean"] = round(fold["plddt_mean"], 1)
+    if fold.get("ptm") is not None:
+        out["ptm"] = round(fold["ptm"], 3)
+    if fold.get("bb_rmsd") is not None:
+        out["bb_rmsd"] = fold["bb_rmsd"]
+    if fold.get("aggregate_score") is not None:
+        out["aggregate_score"] = fold["aggregate_score"]
+    return out
 
 
 def report(records: list[dict], backbone: dict, cfg: dict,
@@ -146,10 +177,7 @@ def report(records: list[dict], backbone: dict, cfg: dict,
                 "mpnn_score": designed[i]["mpnn_score"],
                 "esm_pll": designed[i]["esm_pll"],
                 "seq_recovery": designed[i]["seq_recovery"],
-                **({"plddt_mean": round(
-                        fold_by_seq[designed[i]["seq"]]["plddt_mean"], 1),
-                    "ptm": round(
-                        fold_by_seq[designed[i]["seq"]]["ptm"], 3)}
+                **(_fold_fields(fold_by_seq[designed[i]["seq"]])
                    if designed[i]["seq"] in fold_by_seq else {}),
             }
             for i in top_idx
@@ -161,18 +189,44 @@ def report(records: list[dict], backbone: dict, cfg: dict,
         },
     }
     if folds is not None:
+        n_folded = sum(1 for r in designed if r["seq"] in fold_by_seq)
         dpl = [fold_by_seq[r["seq"]]["plddt_mean"]
-               for r in designed if r["seq"] in fold_by_seq]
+               for r in designed if r["seq"] in fold_by_seq
+               and fold_by_seq[r["seq"]].get("plddt_mean") is not None]
+        rmsds = [fold_by_seq[r["seq"]]["bb_rmsd"]
+                 for r in designed if r["seq"] in fold_by_seq
+                 and fold_by_seq[r["seq"]].get("bb_rmsd") is not None]
+        backends = sorted(
+            {fr.get("fold_backend") for fr in folds
+             if fr.get("fold_backend")}
+        )
         result["fold_screen"] = {
-            "n_folded": len(dpl),
-            "n_unfolded": len(designed) - len(dpl),
+            "backend": (backends[0] if len(backends) == 1
+                        else (backends or None)),
+            "n_folded": n_folded,
+            "n_unfolded": len(designed) - n_folded,
             "native_plddt": (round(
-                fold_by_seq[native["seq"]]["plddt_mean"], 1)
-                if native["seq"] in fold_by_seq else None),
+                fold_by_seq[native["seq"]].get("plddt_mean"), 1)
+                if native["seq"] in fold_by_seq
+                and fold_by_seq[native["seq"]].get("plddt_mean") is not None
+                else None),
             # >70 is the conventional "confident" pLDDT band
             "designed_plddt_mean": (
                 round(float(np.mean(dpl)), 1) if dpl else None),
             "n_confident_ge70": int(sum(v >= 70 for v in dpl)),
+            # designs that refold near the input backbone: evidence the
+            # sequence encodes the fold, not just plausible tokens
+            "self_consistency": {
+                "n_aligned": len(rmsds),
+                "bb_rmsd_mean": (
+                    round(float(np.mean(rmsds)), 2) if rmsds else None),
+                "bb_rmsd_median": (
+                    round(float(np.median(rmsds)), 2) if rmsds else None),
+                "n_below_2A": int(sum(v < 2.0 for v in rmsds)),
+                "native_bb_rmsd": (
+                    fold_by_seq[native["seq"]].get("bb_rmsd")
+                    if native["seq"] in fold_by_seq else None),
+            },
         }
 
     fig, ax = plt.subplots(figsize=(6, 5))

@@ -9,7 +9,7 @@ backbone:
   chain: "A"
 
 mpnn:
-  repo_path: "../proteinmpnn-ext"
+  repo_path: "../../proteinmpnn-ext"
   run_script: "protein_mpnn_run.py"
   weights: "vanilla_model_weights/v_48_020.pt"
   model_name: "v_48_020"
@@ -20,6 +20,14 @@ mpnn:
 
 esm:
   model: "facebook/esm2_t6_8M_UR50D"   # 8M params, CPU-feasible zero-shot scorer
+
+fold:
+  backend: "esmfold"        # esmfold | chai1
+  model: "facebook/esmfold_v1"
+
+chai:
+  command: "chai-lab"
+  extra_args: ["--device", "cpu"]
 
 report:
   top_k: 3

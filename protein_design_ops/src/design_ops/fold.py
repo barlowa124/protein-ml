@@ -76,12 +76,14 @@ def main() -> None:
     folds.mkdir(parents=True, exist_ok=True)
     clean = []
     for i, rec in enumerate(folded):
+        rec["fold_backend"] = "esmfold"
         pdb = rec.pop("pdb", None)
         if pdb is not None:
             # a failed PDB write must not lose the metrics for all records
+            path = folds / f"{i:03d}_{'native' if rec.get('is_native') else 'design'}.pdb"
             try:
-                (folds / f"{i:03d}_{'native' if rec.get('is_native') else 'design'}.pdb"
-                 ).write_text(pdb)
+                path.write_text(pdb)
+                rec["structure_path"] = str(path)
             except Exception as e:
                 rec["fold_error"] = f"pdb write failed: {e}"
         clean.append(rec)

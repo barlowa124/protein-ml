@@ -21,8 +21,9 @@ AA3 = {
 
 
 def parse_chain(pdb_path: str, chain: str) -> dict:
-    """Residue sequence (1-letter) and resseq list for one chain."""
+    """Residue sequence (1-letter), resseq list, and CA coords for one chain."""
     residues = {}
+    coords = {}
     with open(pdb_path) as f:
         for line in f:
             if line.startswith("ENDMDL"):
@@ -36,12 +37,18 @@ def parse_chain(pdb_path: str, chain: str) -> dict:
             resname = line[17:20].strip()
             if resname in AA3:
                 residues.setdefault(resseq, AA3[resname])
+                coords.setdefault(
+                    resseq,
+                    (float(line[30:38]), float(line[38:46]),
+                     float(line[46:54])),
+                )
     if not residues:
         raise ValueError(f"no CA atoms found for chain {chain!r} in {pdb_path}")
     resseqs = sorted(residues)
     return {
         "resseqs": resseqs,
         "native_seq": "".join(residues[r] for r in resseqs),
+        "ca_coords": [coords[r] for r in resseqs],
     }
 
 
