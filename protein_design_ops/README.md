@@ -24,8 +24,8 @@ backbone -> generate (ProteinMPNN) -> score (ESM-2)
   plus the native for reference (~2.4 GB weights on first run, ~2 min/seq
   on CPU; skip with `snakemake report` after removing the fold input)
 - `chai.py` - alternative fold backend. Drives Chai-1 as an external
-  subprocess (`config.chai.command`), collects aggregate score,
-  pTM/ipTM, pLDDT, and the predicted .cif per design
+  subprocess (`config.chai.command`) and collects its score metrics plus
+  the predicted .cif per design
 - `selfconsistency.py` - Kabsch CA RMSD of each predicted structure
   against the input backbone. A design that only scores well in
   sequence space but refolds somewhere else stays visible in the report
@@ -95,9 +95,26 @@ from the 1L2Y floor: 0.83-0.87 on the 76-mer vs 0.09-0.12 on the
 longer chains to discriminate), now demonstrated on both lengths
 instead of asserted.
 
-`design_report.json` carries a `provenance` block: backbone id,
-ProteinMPNN upstream commit + weights, sampling params/seed, and the
-ESM-2 model id, enough to reproduce a run exactly.
+## Self-consistency (designs refolded onto the input backbone)
+
+Each predicted structure is aligned back to the backbone it was
+designed on (Kabsch CA RMSD), which answers a different question than
+pLDDT does. It measures whether the designed sequence still encodes
+this fold.
+
+On 1L2Y, all 16 designs refold within 2.0 A of the input backbone
+(mean 0.79 A, median 0.74 A), and the native sequence itself refolds
+at 0.51 A under the same measurement. The three consensus picks land at
+0.73, 1.29, and 1.10 A, so the sequence-consensus ordering also gives
+the structurally tightest pick. pLDDT said these designs look confident
+in themselves, and the RMSD says they stay on the backbone. Both are
+model outputs, and the same caveat applies. Predicted self-consistency
+is not an experimental structure.
+
+`design_report.json` carries a `provenance` block covering backbone id,
+ProteinMPNN upstream commit + weights, sampling params/seed, the
+ESM-2 model id, and which fold backend ran (`structure_predictor`),
+enough to reproduce a run exactly.
 
 **Reproducibility caveat:** ProteinMPNN's `--seed`
 treats `0` as "pick a random seed" (the upstream script does
@@ -110,10 +127,12 @@ anticorrelate.
 
 ## Scope
 
-- Candidates are computational designs only. The ESMFold screen is a
-  model-confidence signal, not a solved structure and not a function
-  claim. It upgrades "scores well on two sequence models" to "also
-  predicted to fold," and that is as far as the evidence goes.
+- Candidates are computational designs only. The ESMFold/Chai-1 screen
+  is a model-confidence signal, and the backbone RMSD is computed on
+  predicted structures. Neither is a solved structure or a function
+  claim. It upgrades "scores well on two sequence models" to "predicted
+  to fold onto the designed backbone," and that is as far as the
+  evidence goes.
 - Two backbones, one temperature, one seed is a demo, not a study.
   `config/config.yaml` holds all settings for sweeps.
 - ProteinMPNN and ESM-2 are upstream models (dauparas/ProteinMPNN,
