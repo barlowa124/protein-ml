@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Active-learning experiment-selection simulation over a real protein fitness landscape"
 requires-python = ">=3.9"
 dependencies = [
-    "numpy",
+    "numpy>=2",  # uses np.trapezoid (numpy>=2.0)
     "pandas",
     "pyarrow",
     "scikit-learn",
