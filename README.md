@@ -8,6 +8,16 @@ projects merged into one repository, each a self-contained package with its
 own tests, config, and commit history (imported via subtree merge).
 
 
+## 60-second demo
+
+```bash
+cd active_learning_loop && pip install -e .
+snakemake results/curves.png -j1   # fetches GB1 (FLIP), runs one seeded loop
+```
+
+![active (UCB-GP) vs replicated random baseline on GB1](active_learning_loop/results/curves.png)
+
+
 ## Where this sits in the portfolio
 
 `protein-ml` is the **protein fitness ML** repo: supervised and generative models over measured fitness landscapes (GB1, AAV), active learning, ESM embeddings, and diffusion. Sibling repos:
